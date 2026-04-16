@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spanish Vocabulary Quiz App</title>
+  <meta name="description" content="Single-page Spanish vocabulary quiz app for a web development project.">
+  <style>
+    :root {
+      --bg: #f5f1e8;
+      --panel: #ffffff;
+      --ink: #1f2933;
+      --muted: #6b7280;
+      --accent: #0f766e;
+      --accent-dark: #115e59;
+      --warm: #f59e0b;
+      --correct: #166534;
+      --wrong: #b91c1c;
+      --border: #d7d9df;
+      --shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(245, 158, 11, 0.18), transparent 30%),
+        linear-gradient(180deg, #faf6ef 0%, var(--bg) 100%);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    .app-shell { width: min(900px, calc(100% - 2rem)); margin: 0 auto; padding: 2rem 0 4rem; }
+    .app-topbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .app-topbar a { color: var(--accent-dark); text-decoration: none; font-weight: 600; }
+    .title-block p { margin: 0 0 0.35rem; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.78rem; color: var(--muted); }
+    .title-block h1 { margin: 0; font-size: clamp(2rem, 4vw, 3rem); }
+    .app-panel { background: var(--panel); border: 1px solid rgba(15, 23, 42, 0.08); border-radius: 28px; box-shadow: var(--shadow); overflow: hidden; }
+    .app-status { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(15, 23, 42, 0.08); }
+    .status-card { background: #eef4f3; padding: 1rem; }
+    .status-card strong, .status-card span { display: block; }
+    .status-card span { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.25rem; }
+    .quiz-body { padding: 2rem; }
+    .quiz-card { background: #fcfcfb; border: 1px solid var(--border); border-radius: 22px; padding: 1.5rem; }
+    .question-label { color: var(--muted); font-size: 0.95rem; margin: 0 0 0.5rem; }
+    .question-text { font-size: clamp(1.4rem, 3vw, 2rem); margin: 0 0 1.5rem; }
+    .choices { display: grid; gap: 0.85rem; }
+    .choice-button, .primary-button, .secondary-button { border: none; border-radius: 16px; padding: 0.95rem 1rem; font: inherit; cursor: pointer; transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+    .choice-button { background: #f6f7f9; border: 1px solid var(--border); text-align: left; font-weight: 600; }
+    .choice-button:hover, .choice-button:focus-visible, .primary-button:hover, .primary-button:focus-visible, .secondary-button:hover, .secondary-button:focus-visible { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08); outline: none; }
+    .choice-button.correct { background: rgba(22, 101, 52, 0.12); border-color: rgba(22, 101, 52, 0.45); color: var(--correct); }
+    .choice-button.incorrect { background: rgba(185, 28, 28, 0.12); border-color: rgba(185, 28, 28, 0.4); color: var(--wrong); }
+    .choice-button:disabled { cursor: default; }
+    .feedback { margin-top: 1.25rem; min-height: 1.5rem; font-weight: 600; }
+    .feedback.correct { color: var(--correct); }
+    .feedback.incorrect { color: var(--wrong); }
+    .actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
+    .primary-button { background: var(--accent); color: #fff; }
+    .primary-button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+    .secondary-button { background: transparent; border: 1px solid var(--border); color: var(--ink); }
+    .result-box { display: none; margin-top: 1.5rem; padding: 1.25rem; border-radius: 18px; background: #f6efe2; border: 1px solid rgba(245, 158, 11, 0.25); }
+    .result-box.visible { display: block; }
+    .app-note { margin-top: 1rem; color: var(--muted); font-size: 0.95rem; }
+
+    @media (max-width: 700px) {
+      .app-status { grid-template-columns: 1fr; }
+      .quiz-body { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <div class="app-topbar">
+      <div class="title-block">
+        <p>Single-Page Interactive App</p>
+        <h1>Spanish Vocabulary Quiz</h1>
+      </div>
+      <a href="scratch.html">Back to Scratch Page</a>
+    </div>
+
+    <section class="app-panel" aria-labelledby="quiz-heading">
+      <div class="app-status">
+        <div class="status-card"><span>Question</span><strong id="question-count">1 / 6</strong></div>
+        <div class="status-card"><span>Score</span><strong id="score-count">0</strong></div>
+        <div class="status-card"><span>Status</span><strong id="status-text">Choose the best translation.</strong></div>
+      </div>
+
+      <div class="quiz-body">
+        <div class="quiz-card">
+          <p class="question-label" id="quiz-heading">Translate this Spanish word or phrase:</p>
+          <h2 class="question-text" id="question-text">Loading question...</h2>
+          <div class="choices" id="choices-container"></div>
+          <p class="feedback" id="feedback" aria-live="polite"></p>
+          <div class="actions">
+            <button class="primary-button" id="next-button" disabled>Next Question</button>
+            <button class="secondary-button" id="restart-button" type="button">Restart Quiz</button>
+          </div>
+          <div class="result-box" id="result-box" aria-live="polite"></div>
+          <p class="app-note">This quiz is designed as a simple study tool and can easily be updated with a larger vocabulary set later.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      { prompt: "hola", choices: ["goodbye", "hello", "please", "school"], answer: "hello" },
+      { prompt: "libro", choices: ["book", "table", "window", "friend"], answer: "book" },
+      { prompt: "gracias", choices: ["thank you", "excuse me", "good night", "water"], answer: "thank you" },
+      { prompt: "¿Dónde está el baño?", choices: ["How much does it cost?", "Where is the bathroom?", "What time is it?", "Can you help me?"], answer: "Where is the bathroom?" },
+      { prompt: "comida", choices: ["music", "family", "food", "car"], answer: "food" },
+      { prompt: "mañana", choices: ["night", "today", "tomorrow", "afternoon"], answer: "tomorrow" }
+    ];
+
+    const questionCount = document.getElementById("question-count");
+    const scoreCount = document.getElementById("score-count");
+    const statusText = document.getElementById("status-text");
+    const questionText = document.getElementById("question-text");
+    const choicesContainer = document.getElementById("choices-container");
+    const feedback = document.getElementById("feedback");
+    const nextButton = document.getElementById("next-button");
+    const restartButton = document.getElementById("restart-button");
+    const resultBox = document.getElementById("result-box");
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let questionAnswered = false;
+
+    function renderQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionAnswered = false;
+      questionCount.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
+      scoreCount.textContent = score;
+      statusText.textContent = "Choose the best translation.";
+      questionText.textContent = currentQuestion.prompt;
+      feedback.textContent = "";
+      feedback.className = "feedback";
+      nextButton.disabled = true;
+      resultBox.classList.remove("visible");
+      resultBox.textContent = "";
+      choicesContainer.innerHTML = "";
+
+      currentQuestion.choices.forEach((choice) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "choice-button";
+        button.textContent = choice;
+        button.addEventListener("click", () => handleAnswer(button, choice));
+        choicesContainer.appendChild(button);
+      });
+    }
+
+    function handleAnswer(button, selectedChoice) {
+      if (questionAnswered) return;
+
+      const currentQuestion = questions[currentQuestionIndex];
+      const allButtons = choicesContainer.querySelectorAll(".choice-button");
+      questionAnswered = true;
+
+      allButtons.forEach((choiceButton) => {
+        choiceButton.disabled = true;
+        if (choiceButton.textContent === currentQuestion.answer) {
+          choiceButton.classList.add("correct");
+        }
+      });
+
+      if (selectedChoice === currentQuestion.answer) {
+        score += 1;
+        scoreCount.textContent = score;
+        feedback.textContent = "Correct. Well done.";
+        feedback.classList.add("correct");
+        statusText.textContent = "Correct answer selected.";
+      } else {
+        button.classList.add("incorrect");
+        feedback.textContent = `Not quite. The correct answer is "${currentQuestion.answer}".`;
+        feedback.classList.add("incorrect");
+        statusText.textContent = "Review the correct answer and continue.";
+      }
+
+      nextButton.disabled = false;
+    }
+
+    function showResults() {
+      questionText.textContent = "Quiz complete";
+      choicesContainer.innerHTML = "";
+      feedback.textContent = "";
+      feedback.className = "feedback";
+      questionCount.textContent = `${questions.length} / ${questions.length}`;
+      statusText.textContent = "Finished";
+      nextButton.disabled = true;
+      resultBox.classList.add("visible");
+
+      const percentage = Math.round((score / questions.length) * 100);
+      resultBox.innerHTML = `
+        <h2>Final Score</h2>
+        <p>You answered <strong>${score}</strong> out of <strong>${questions.length}</strong> questions correctly.</p>
+        <p>Your score: <strong>${percentage}%</strong></p>
+        <p>Use the restart button to practice again and improve your score.</p>
+      `;
+    }
+
+    nextButton.addEventListener("click", () => {
+      if (!questionAnswered) return;
+      currentQuestionIndex += 1;
+      if (currentQuestionIndex >= questions.length) {
+        showResults();
+      } else {
+        renderQuestion();
+      }
+    });
+
+    restartButton.addEventListener("click", () => {
+      currentQuestionIndex = 0;
+      score = 0;
+      renderQuestion();
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
