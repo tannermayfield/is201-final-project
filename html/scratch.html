@@ -16,7 +16,6 @@
       <nav class="scratch-nav" aria-label="Scratch page navigation">
         <a href="#why-it-matters">Why It Matters</a>
         <a href="#habits">Study Habits</a>
-        <a href="#visuals">Visuals</a>
         <a href="#resources">Resources</a>
         <a href="app.html">Open Quiz App</a>
         <a href="career.html">Career Page</a>
@@ -46,12 +45,53 @@
       </ol>
     </section>
 
-    <section class="scratch-section">
-      <h2>Tableau Visualization Placeholder</h2>
-      <p>This section can hold a live Tableau visualization that shows study time, vocabulary growth, quiz results, or another simple learning pattern.</p>
-      <!-- Insert your Tableau embed code below this comment when ready. -->
-      <div class="embed-box">Tableau visualization placeholder</div>
-    </section>
+    <div class="tableau-section">
+      <h2 id="tableau-anchor">Language Data Visualization</h2>
+
+      <p>
+        This interactive Tableau dashboard explores multilingualism and language usage patterns.
+        You can interact with the chart directly below.
+      </p>
+
+      <div class='tableauPlaceholder' id='viz1776317169622' style='position: relative'>
+        <noscript>
+          <a href='#'>
+            <img alt='Dashboard 1'
+            src='https://public.tableau.com/static/images/Ou/OurLanguagesMultilingualismGraphs/Dashboard1/1_rss.png'
+            style='border: none' />
+          </a>
+        </noscript>
+
+        <object class='tableauViz' style='display:none;'>
+          <param name='host_url' value='https://public.tableau.com/' />
+          <param name='embed_code_version' value='3' />
+          <param name='site_root' value='' />
+          <param name='name' value='OurLanguagesMultilingualismGraphs/Dashboard1' />
+          <param name='tabs' value='no' />
+          <param name='toolbar' value='yes' />
+          <param name='static_image'
+          value='https://public.tableau.com/static/images/Ou/OurLanguagesMultilingualismGraphs/Dashboard1/1.png' />
+          <param name='animate_transition' value='yes' />
+          <param name='display_static_image' value='yes' />
+          <param name='display_spinner' value='yes' />
+          <param name='display_overlay' value='yes' />
+          <param name='display_count' value='yes' />
+          <param name='language' value='en-US' />
+        </object>
+      </div>
+
+      <script type='text/javascript'>
+        var divElement = document.getElementById('viz1776317169622');
+        var vizElement = divElement.getElementsByTagName('object')[0];
+
+        vizElement.style.width = '100%';
+        vizElement.style.height = '800px';
+
+        var scriptElement = document.createElement('script');
+        scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+        vizElement.parentNode.insertBefore(scriptElement, vizElement);
+      </script>
+    </div>
 
     <section id="resources" class="scratch-section scratch-highlight">
       <h2>Take the interactive quiz</h2>

@@ -98,21 +98,41 @@
             <button class="secondary-button" id="restart-button" type="button">Restart Quiz</button>
           </div>
           <div class="result-box" id="result-box" aria-live="polite"></div>
-          <p class="app-note">This quiz is designed as a simple study tool and can easily be updated with a larger vocabulary set later.</p>
+          <p class="app-note">This quiz uses a larger AI-generated starter vocabulary bank and builds a random set of questions each time you play.</p>
         </div>
       </div>
     </section>
   </main>
 
   <script>
-    const questions = [
-      { prompt: "hola", choices: ["goodbye", "hello", "please", "school"], answer: "hello" },
-      { prompt: "libro", choices: ["book", "table", "window", "friend"], answer: "book" },
-      { prompt: "gracias", choices: ["thank you", "excuse me", "good night", "water"], answer: "thank you" },
-      { prompt: "¿Dónde está el baño?", choices: ["How much does it cost?", "Where is the bathroom?", "What time is it?", "Can you help me?"], answer: "Where is the bathroom?" },
-      { prompt: "comida", choices: ["music", "family", "food", "car"], answer: "food" },
-      { prompt: "mañana", choices: ["night", "today", "tomorrow", "afternoon"], answer: "tomorrow" }
+    // This vocabulary bank was prepared ahead of time so the app can stay safe on GitHub Pages.
+    // The quiz still feels dynamic because it randomly builds a new set of questions each round.
+    const vocabularyBank = [
+      { spanish: "hola", english: "hello", category: "Greetings" },
+      { spanish: "adiós", english: "goodbye", category: "Greetings" },
+      { spanish: "gracias", english: "thank you", category: "Greetings" },
+      { spanish: "por favor", english: "please", category: "Greetings" },
+      { spanish: "buenos días", english: "good morning", category: "Greetings" },
+      { spanish: "amigo", english: "friend", category: "People" },
+      { spanish: "familia", english: "family", category: "People" },
+      { spanish: "maestro", english: "teacher", category: "People" },
+      { spanish: "casa", english: "house", category: "Everyday Words" },
+      { spanish: "libro", english: "book", category: "Everyday Words" },
+      { spanish: "mesa", english: "table", category: "Everyday Words" },
+      { spanish: "agua", english: "water", category: "Everyday Words" },
+      { spanish: "comida", english: "food", category: "Everyday Words" },
+      { spanish: "escuela", english: "school", category: "Everyday Words" },
+      { spanish: "coche", english: "car", category: "Everyday Words" },
+      { spanish: "ventana", english: "window", category: "Everyday Words" },
+      { spanish: "mañana", english: "tomorrow", category: "Time and Travel" },
+      { spanish: "hoy", english: "today", category: "Time and Travel" },
+      { spanish: "¿Dónde está el baño?", english: "Where is the bathroom?", category: "Time and Travel" },
+      { spanish: "¿Cuánto cuesta?", english: "How much does it cost?", category: "Time and Travel" },
+      { spanish: "aeropuerto", english: "airport", category: "Time and Travel" }
     ];
+
+    const questionsPerRound = 6;
+    let questions = [];
 
     const questionCount = document.getElementById("question-count");
     const scoreCount = document.getElementById("score-count");
@@ -128,12 +148,51 @@
     let score = 0;
     let questionAnswered = false;
 
+    function shuffleArray(array) {
+      const copy = [...array];
+
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const randomIndex = Math.floor(Math.random() * (i + 1));
+        const temp = copy[i];
+        copy[i] = copy[randomIndex];
+        copy[randomIndex] = temp;
+      }
+
+      return copy;
+    }
+
+    function buildRandomQuestions() {
+      const selectedWords = shuffleArray(vocabularyBank).slice(0, questionsPerRound);
+
+      return selectedWords.map((word) => {
+        const wrongAnswers = shuffleArray(
+          vocabularyBank
+            .filter((item) => item.english !== word.english)
+            .map((item) => item.english)
+        ).slice(0, 3);
+
+        return {
+          prompt: word.spanish,
+          answer: word.english,
+          category: word.category,
+          choices: shuffleArray([word.english, ...wrongAnswers])
+        };
+      });
+    }
+
+    function startNewQuiz() {
+      questions = buildRandomQuestions();
+      currentQuestionIndex = 0;
+      score = 0;
+      renderQuestion();
+    }
+
     function renderQuestion() {
       const currentQuestion = questions[currentQuestionIndex];
       questionAnswered = false;
       questionCount.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
       scoreCount.textContent = score;
-      statusText.textContent = "Choose the best translation.";
+      statusText.textContent = currentQuestion.category;
       questionText.textContent = currentQuestion.prompt;
       feedback.textContent = "";
       feedback.className = "feedback";
@@ -212,12 +271,10 @@
     });
 
     restartButton.addEventListener("click", () => {
-      currentQuestionIndex = 0;
-      score = 0;
-      renderQuestion();
+      startNewQuiz();
     });
 
-    renderQuestion();
+    startNewQuiz();
   </script>
 </body>
 </html>
