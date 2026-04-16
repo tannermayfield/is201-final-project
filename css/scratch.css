@@ -151,6 +151,38 @@ body {
   margin-bottom: 4rem;
 }
 
+.tableau-section {
+  margin: 2.25rem 0;
+  padding: 1.75rem;
+  background: var(--scratch-card);
+  border: 1px solid var(--scratch-line);
+  border-radius: 24px;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 10px 30px rgba(42, 36, 31, 0.06);
+}
+
+.tableau-section h2 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.55rem, 3vw, 2.25rem);
+  color: var(--scratch-ink);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.tableau-section p {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  color: var(--scratch-muted);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.tableauPlaceholder {
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid var(--scratch-line);
+  background: rgba(255, 255, 255, 0.55);
+}
+
 .scratch-button {
   display: inline-block;
   margin-top: 1rem;
